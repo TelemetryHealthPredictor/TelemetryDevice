@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using ParameterDataLib;
 using TelemetryDeviceV1.Dataflow.Stages.Helpers;
+using TelemetryDeviceV1.Logging;
 
 namespace TelemetryDeviceV1.Dataflow.Stages
 {
@@ -8,9 +9,13 @@ namespace TelemetryDeviceV1.Dataflow.Stages
     {
         private readonly TelemetryProducer _producer;
 
-        public KafkaStage(TelemetryProducer producer)
+        private readonly ILoggerTD _logger;
+
+        public KafkaStage(TelemetryProducer producer, DelayedLogger logger)
         {
             _producer = producer;
+
+            _logger = logger;
         }
 
         public void FlushProducer()
@@ -20,11 +25,7 @@ namespace TelemetryDeviceV1.Dataflow.Stages
 
         public void Transmit(List<ParameterData> parameterValues)
         {
-            string json;
-
-            json = JsonSerializer.Serialize(parameterValues);
-
-            Console.WriteLine("Sending to kafka");
+            string json = JsonSerializer.Serialize(parameterValues);
 
             _producer.SendTelemetryAsync(json);
         }

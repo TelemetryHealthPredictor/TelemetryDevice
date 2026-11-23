@@ -2,19 +2,19 @@
 {
     public class CountingLogger : ILoggerTD
     {
-        private readonly Dictionary<string, int> messageCounts;
+        private readonly Dictionary<string, int> _messageCounts;
 
         public CountingLogger()
         {
-            messageCounts = new Dictionary<string, int>();
+            _messageCounts = new Dictionary<string, int>();
         }
 
         public void Log(string message)
         {
-            messageCounts.TryAdd(message, 1);
-            messageCounts[message]++;
+            _messageCounts.TryAdd(message, 0);
+            _messageCounts[message]++;
 
-            Console.WriteLine($"{message} - {messageCounts[message]}");
+            Console.WriteLine($"{message} - {_messageCounts[message]}");
         }
     }
 }

@@ -14,9 +14,9 @@ namespace TelemetryDeviceV1.Dataflow.Stages.Helpers
 
         private readonly IProducer<string, string> _producer;
 
-        private readonly ILoggerTD _logger;
+        private readonly ConsoleLogger _logger;
 
-        public TelemetryProducer(IOptions<KafkaConfig> options, ILoggerTD logger)
+        public TelemetryProducer(IOptions<KafkaConfig> options, ConsoleLogger logger)
         {
             bootstrapServers = options.Value.BootstrapServers;
             topicName = options.Value.TopicName;

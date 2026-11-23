@@ -21,7 +21,9 @@ namespace TelemetryDeviceV1.Setup
             builder.Services.Configure<KafkaConfig>
                 (builder.Configuration.GetSection(nameof(KafkaConfig)));
 
-            builder.Services.AddSingleton<ILoggerTD, ConsoleLogger>();
+            builder.Services.AddSingleton<ConsoleLogger>();
+            builder.Services.AddSingleton<CountingLogger>();
+            builder.Services.AddSingleton<DelayedLogger>();
 
             builder.Services.AddSingleton<IcdDeserializer>();
 

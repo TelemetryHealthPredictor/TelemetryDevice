@@ -25,18 +25,7 @@ namespace TelemetryDeviceV1.Dataflow.Stages
                     return null!;
                 }
             }
-
-            ulong timestampMS = GetTimestamp(capture.Timeval);
-
-            return [.. BitConverter.GetBytes(timestampMS), .. udp.PayloadData.Skip(syncBytesCount)];
-        }
-
-        private static ulong GetTimestamp(PosixTimeval timeval)
-        {
-            const int millisInSecond = 1000;
-            const int microsInMillis = 1000;
-
-            return (timeval.Seconds * millisInSecond) + (timeval.MicroSeconds /  microsInMillis);
+            return udp.PayloadData.Skip(syncBytesCount).ToArray();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using TelemetryDeviceV1.Dataflow;
+using TelemetryDeviceV1.Logging;
 using TelemetryDeviceV1.Sniffing;
 using TelemetryDeviceV1.Sniffing.Helpers;
 
@@ -10,16 +11,19 @@ namespace TelemetryDeviceV1.Services
         private readonly CaptureDeviceService _deviceService;
         private readonly SemaphoreSlim _sem = new SemaphoreSlim(1, 1);
 
+        private readonly ILoggerTD _logger;
+
         private CancellationTokenSource? _cts;
         private Pipeline? _pipeline;
         private NetworkSniffer? _sniffer;
 
         public bool IsRunning => _cts is not null;
 
-        public TDRuntimeService(PipelineBuilder pipelineBuilder, CaptureDeviceService deviceService)
+        public TDRuntimeService(PipelineBuilder pipelineBuilder, CaptureDeviceService deviceService, ConsoleLogger logger)
         {
             _pipelineBuilder = pipelineBuilder;
             _deviceService = deviceService;
+            _logger = logger;
         }
 
         public async Task StartAsync()
@@ -36,6 +40,8 @@ namespace TelemetryDeviceV1.Services
                 _cts = new CancellationTokenSource();
                 _pipeline = _pipelineBuilder.Build();
                 _sniffer = new NetworkSniffer(_pipeline, _deviceService);
+
+                _logger.Log("Starting Telemetry Device - Beginning to sniff network");
 
                 _sniffer.BeginCapture(_cts.Token);
             }

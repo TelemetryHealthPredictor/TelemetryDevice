@@ -10,42 +10,23 @@ namespace TelemetryDeviceV1.Dataflow.Stages.Helpers
 
         public static double GetFloat64(byte[] data, byte[] mask)
         {
-            byte[] result = new byte[_floatSize];
+            ulong extractedBits = 0;
 
-            if (data.Length != _floatSize)
+            for (int i = 0; i < data.Length; i++)
             {
-                int resultBit = _floatSize * _byteBits;
+                byte dataByte = data[i];
+                byte maskByte = mask[i];
 
-                for (int i = data.Length - 1; i >= 0; i--)
+                for (int bit = 7; bit >= 0; bit--)
                 {
-                    for (int j = 0; j < _byteBits; j++)
+                    if (((maskByte >> bit) & 1) == 1)
                     {
-                        if (((mask[i] >> j) & 1) == 1)
-                        {
-                            resultBit--;
-
-                            if (((data[i] >> j) & 1) == 1)
-                            {
-                                int index = resultBit / _byteBits;
-                                int bit = resultBit % _byteBits;
-
-                                result[index] |= (byte)(1 << bit);
-                            }
-                        }
+                        extractedBits = (extractedBits << 1) | (uint)((dataByte >> bit) & 1);
                     }
                 }
             }
-            else
-            {
-                for (int i = 0; i < _floatSize; i++)
-                {
-                    result[i] = (byte)(data[i] & mask[i]);
-                }
-            }
 
-            Array.Reverse(result);
-
-            return BitConverter.ToDouble(result);
+            return BitConverter.UInt64BitsToDouble(extractedBits);
         }
 
         public static int GetInt32(byte[] data, byte[] mask, ParameterDataType type)
